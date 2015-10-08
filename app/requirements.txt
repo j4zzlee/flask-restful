@@ -1,3 +1,6 @@
 uwsgi 
 flask
 flask-restful
+flask-migrate
+Flask-SQLAlchemy
+Flask-OAuthlib
