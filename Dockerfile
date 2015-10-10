@@ -3,7 +3,7 @@ FROM ubuntu:14.04
 MAINTAINER Le Huu Hoang Gia <hoanggia.lh@gmail.com>
 
 RUN apt-get update
-RUN apt-get -y install nginx  sed python-pip python-dev uwsgi-plugin-python supervisor
+RUN apt-get -y install nginx  sed python-pip python-dev uwsgi-plugin-python python-mysqldb supervisor
 
 RUN mkdir -p /var/log/nginx/app
 RUN mkdir -p /var/log/uwsgi/app/
