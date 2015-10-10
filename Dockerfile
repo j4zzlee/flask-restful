@@ -23,4 +23,12 @@ copy app /var/www/app
 RUN pip install -r /var/www/app/requirements.txt
 
 
+WORKDIR /var/www/app/config/
+
+RUN rm -rf local.*
+
+WORKDIR /var/www/app
+
+RUN python migrations.py db upgrade
+
 CMD ["/usr/bin/supervisord"]

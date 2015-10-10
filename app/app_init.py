@@ -15,7 +15,14 @@ def create_app():
     global oauth_controller
 
     app = Flask(__name__)
-    app.config.from_object('config')
+    app.config.from_object('config.default')
+    app.config.from_object('config.production')
+
+    try:
+        # only get configs from local if exists
+        app.config.from_object('config.local')
+    except ImportError:
+        pass
 
     app.register_blueprint(oauth_controller)
 
@@ -23,19 +30,13 @@ def create_app():
 
     oauth.init_app(app)
 
-    # api = ApiProvider(app, decorators=[oauth.require_oauth('email')])
-    # api.add_controllers()
+    api = ApiProvider(app, decorators=[oauth.require_oauth('email')])
+    api.add_controllers()
 
     return app
 
 
 oauth_controller = Blueprint('oauth', __name__, url_prefix='/oauth')
-
-
-@oauth_controller.route('/errors', methods=['GET', 'POST'])
-def errors(*args, **kwargs):
-    from flask import jsonify
-    return jsonify(request.args)
 
 
 @oauth_controller.route('/authorize', methods=['GET', 'POST'])

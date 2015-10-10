@@ -48,6 +48,7 @@ def run_migrations_offline():
 
 
 def run_migrations_online():
+    from models import User, Token, Grant, Client
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine

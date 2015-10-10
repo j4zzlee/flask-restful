@@ -52,7 +52,7 @@ class Grant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')
+        db.String(16), db.ForeignKey('user.id', ondelete='CASCADE')
     )
     user = db.relationship('User')
 
@@ -90,7 +90,7 @@ class Token(db.Model):
     client = db.relationship('Client')
 
     user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id')
+        db.String(16), db.ForeignKey('user.id')
     )
     user = db.relationship('User')
 
@@ -115,9 +115,8 @@ class Token(db.Model):
 
 
 class User(db.Model):
-    id = db.Column(db.Binary(16), primary_key=True)
+    id = db.Column(db.String(16), primary_key=True)
     user_name = db.Column(db.String(255), unique=True)
-    xx = db.Column(db.String(255))
     facebook = db.Column(db.String(255))
     skype = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
