@@ -1,0 +1,53 @@
+* Remove old containers (name reuseable)
+> docker rm `docker ps --no-trunc -aq`
+
+* SSH to docker
+> docker exec -i -t <started name>
+
+* Local client_id
+> OSCZXSKQBDHPWIJJHFFBVZNUGGADSOCRPBQVVKDP
+
+* Local client_secret
+> NZEJICMBWHQHAEPRLMHEVRYVEEOGWXHUAIOPMLWQWMVWIXUKOBWHGOV
+
+* Get authorization_code:
+> http://0.0.0.0:5000/oauth/authorize?client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ&response_type=code
+> {
+  "code": "Gbu57qoghGxq79Oolkuh0iuia6xgTn"
+}
+
+* Get access_token:
+> http://0.0.0.0:5000/oauth/token
+> curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: 2de4306e-efe4-794a-9bcb-9498942cdbc9"
+  -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+  -F "grant_type=authorization_code"
+  -F "client_secret=WGSYGQZUVYAWXLPRCOMKPCAAGUMHAFQMXQLNIYSOESANOPJCMAUZFUX"
+  -F "client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ"
+  -F "code=Gbu57qoghGxq79Oolkuh0iuia6xgTn" 'http://0.0.0.0:5000/oauth/token'
+
+> {
+  "token_type": "Bearer",
+  "version": "0.1.0",
+  "access_token": "V4cTidBz278yc8MGPNyoLKYhX6NgtV",
+  "scope": "email",
+  "expires_in": 3600,
+  "refresh_token": "hz8ZrGxQitu6CnqHUsNg5SRQFpMiex"
+}
+
+* Or get access_token by refresh_token:
+> curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: 85a594e7-4a06-9b8b-ec17-e6ac66db5390"
+  -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+  -F "grant_type=refresh_token"
+  -F "client_secret=WGSYGQZUVYAWXLPRCOMKPCAAGUMHAFQMXQLNIYSOESANOPJCMAUZFUX"
+  -F "client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ"
+  -F "refresh_token=hz8ZrGxQitu6CnqHUsNg5SRQFpMiex"
+  'http://0.0.0.0:5000/oauth/token'
+
+> {
+  "token_type": "Bearer",
+  "version": "0.1.0",
+  "access_token": "V4m8F5OR10xV3VJB4fkZpJ5n6VBGNy",
+  "scope": "email",
+  "expires_in": 3600,
+  "refresh_token": "JSjHJ4qtRZedc3W0h0gnD73ZWTHTQ4"
+}

@@ -10,6 +10,7 @@ db = SQLAlchemy()
 
 def create_app():
     global app
+    global db
     global migrate
     global manager
     global oauth_controller
@@ -42,15 +43,7 @@ oauth_controller = Blueprint('oauth', __name__, url_prefix='/oauth')
 @oauth_controller.route('/authorize', methods=['GET', 'POST'])
 @oauth.authorize_handler
 def authorize(*args, **kwargs):
-    from models import Client
-    if request.method == 'GET':
-        client_id = kwargs.get('client_id')
-        client = Client.query.filter_by(client_id=client_id).first()
-        kwargs['client'] = client
-        return render_template('oauthorize.html', **kwargs)
-
-    confirm = request.form.get('confirm', 'no')
-    return confirm == 'yes'
+    return True
 
 
 @oauth_controller.route('/token', methods=['POST'])
@@ -63,9 +56,15 @@ def access_token():
 @oauth.revoke_handler
 def revoke_token(): pass
 
-
 # This should be on last line of this file
 app = create_app()
+
+@app.route('/application/authorized', methods=['GET'])
+def authorized(*args, **kwargs):
+    from flask import jsonify
+    return jsonify({
+        'code': request.values.get('code', '')
+    })
 
 
 @app.errorhandler(Exception)
@@ -73,15 +72,16 @@ def handle_invalid_usage(error):
     from flask import jsonify
 
     response = jsonify({
-        'error': error.error,
-        'error_description': error.description,
+        'error': hasattr(error, 'error') and error.error or 'Unexpected Error!!!',
+        'error_description': hasattr(error,
+                                     'description') and error.description or
+                             'The system has encountered an unexpected error. Please contact administrator (hoanggia.lh@gmail.com) for better supports',
         'message': error.message,
-        'status_code': error.status_code,
+        'status_code': hasattr(error, 'status_code') and error.status_code or 500,
     })
 
-    response.status_code = error.status_code
+    response.status_code = hasattr(error, 'status_code') and error.status_code or 500
     return response
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

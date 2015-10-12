@@ -1,9 +1,16 @@
 __author__ = 'gia'
 
 from app_init import db
+from flask import current_app
 
 
-class Client(db.Model):
+class Base():
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Client(db.Model, Base):
+    __tablename__ = 'client'
     # human readable name, not required
     name = db.Column(db.String(40))
 
@@ -43,16 +50,20 @@ class Client(db.Model):
 
     @property
     def default_scopes(self):
-        if self._default_scopes:
-            return self._default_scopes.split()
-        return []
+        return [
+            'email'
+        ]
+        # if self._default_scopes:
+        #     return self._default_scopes.split()
+        # return []
 
 
-class Grant(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class Grant(db.Model, Base):
+    __tablename__ = 'grant'
+    id = db.Column(db.String(40), primary_key=True)
 
     user_id = db.Column(
-        db.String(16), db.ForeignKey('user.id', ondelete='CASCADE')
+        db.String(40), db.ForeignKey('user.id', ondelete='CASCADE')
     )
     user = db.relationship('User')
 
@@ -80,8 +91,12 @@ class Grant(db.Model):
             return self._scopes.split()
         return []
 
+    def validate_redirect_uri(self, redirect_uri):
+        return True
 
-class Token(db.Model):
+
+class Token(db.Model, Base):
+    __tablename__ = 'token'
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(
         db.String(40), db.ForeignKey('client.client_id'),
@@ -90,7 +105,7 @@ class Token(db.Model):
     client = db.relationship('Client')
 
     user_id = db.Column(
-        db.String(16), db.ForeignKey('user.id')
+        db.String(40), db.ForeignKey('user.id')
     )
     user = db.relationship('User')
 
@@ -114,13 +129,17 @@ class Token(db.Model):
         return []
 
 
-class User(db.Model):
-    id = db.Column(db.String(16), primary_key=True)
-    user_name = db.Column(db.String(255), unique=True)
+class User(db.Model, Base):
+    __tablename__ = 'user'
+    id = db.Column(db.String(40), primary_key=True)
+    username = db.Column(db.String(255), unique=True, nullable=False)
     facebook = db.Column(db.String(255))
     skype = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
     dob = db.Column(db.Integer())
-    email = db.Column(db.String(255), unique=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
     photo = db.Column(db.String(255))
+    password = db.Column(db.String(255))
+
+

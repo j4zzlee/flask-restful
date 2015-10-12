@@ -21,11 +21,14 @@ class OAuthProviderImpl(OAuth2Provider):
         return Grant.query.filter_by(client_id=client_id, code=code).first()
 
     def _grantsetter(self, client_id, code, request, *args, **kwargs):
+        import uuid
         from app_init import db
         from models import Grant
+
         # decide the expires time yourself
-        expires = datetime.utcnow() + timedelta(seconds=100)
+        expires = datetime.utcnow() + timedelta(days=1)
         grant = Grant(
+            id=str(uuid.uuid4()),
             client_id=client_id,
             code=code['code'],
             redirect_uri=request.redirect_uri,
@@ -47,11 +50,14 @@ class OAuthProviderImpl(OAuth2Provider):
     def _tokensetter(self, token, request, *args, **kwargs):
         from models import Token
         from app_init import db
-        toks = Token.query.filter_by(client_id=request.client.client_id,
-                                     user_id=request.user.id)
-        # make sure that every client has only one token connected to a user
-        for t in toks:
-            db.session.delete(t)
+
+        if request.user:
+            toks = request.user and Token.query.filter_by(
+                client_id=request.client.client_id,
+                user_id=request.user.id) or Token.query.filter_by(client_id=request.client.client_id)
+            # make sure that every client has only one token connected to a user
+            for t in toks:
+                db.session.delete(t)
 
         expires_in = token.get('expires_in')
         expires = datetime.utcnow() + timedelta(seconds=expires_in)
@@ -63,7 +69,7 @@ class OAuthProviderImpl(OAuth2Provider):
             _scopes=token['scope'],
             expires=expires,
             client_id=request.client.client_id,
-            user_id=request.user.id,
+            user_id=request.user and request.user.id or None,
         )
         db.session.add(tok)
         db.session.commit()
@@ -149,8 +155,7 @@ class OAuthProviderImpl(OAuth2Provider):
     def confirm_authorization_request(self):
         """When consumer confirm the authorization."""
         server = self.server
-        scope = request.values.get('scope') or ''
-        scopes = scope.split()
+        scopes = request.args.get('scopes', 'email').split()
         credentials = dict(
             client_id=request.values.get('client_id'),
             redirect_uri=request.values.get('redirect_uri', None),
