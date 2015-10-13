@@ -1,10 +1,14 @@
 __author__ = 'gia'
 
-from app_init import db
-from flask import current_app
+from flask import current_app as app
+
+db = app.db
 
 
-class Base():
+class Base:
+    def __init__(self):
+        pass
+
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -141,5 +145,3 @@ class User(db.Model, Base):
     email = db.Column(db.String(255), unique=True, nullable=False)
     photo = db.Column(db.String(255))
     password = db.Column(db.String(255))
-
-

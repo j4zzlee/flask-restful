@@ -178,3 +178,15 @@ class OAuthProviderImpl(OAuth2Provider):
         except oauth2.OAuth2Error as e:
             log.debug('OAuth2Error: %r', e)
             raise
+
+#
+# oauth = OAuthProviderImpl()
+# from flask import current_app as app
+# from controllers import oauth_controller
+#
+# with app.app_context():
+#     oauth.init_app(app)
+#     # app.register_blueprint(oauth_controller)
+#
+#
+
