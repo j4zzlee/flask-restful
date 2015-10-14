@@ -6,21 +6,25 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 
 def create_app():
-    app = Flask(__name__)
-    app.config.from_object('config.default')
-    app.config.from_object('config.production')
+    from config import add_configs
+    app = add_configs(Flask(__name__))
 
-    try:
-        # only get configs from local if exists
-        app.config.from_object('config.local')
-    except ImportError:
-        pass
+    with app.app_context():
+        from models import db
+        from models.Category import Category
+        from models.EntityMeta import EntityMeta
+        from models.MetaGroup import MetaGroup
+        from models.MetaValue import MetaValue
+        from models.Product import Product
 
-    import models
-    migrate = Migrate(app, models.db, directory='bin/migrations/')
+        db.init_app(app)
+        app.db = db
 
-    mgr = Manager(app)
-    mgr.add_command('db', MigrateCommand)
+        # import models
+        migrate = Migrate(app, db, directory='bin/migrations/')
+
+        mgr = Manager(app)
+        mgr.add_command('db', MigrateCommand)
 
     return mgr
 

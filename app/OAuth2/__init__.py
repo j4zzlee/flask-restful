@@ -78,9 +78,9 @@ class OAuthProviderImpl(OAuth2Provider):
         return tok
 
     def _usergetter(self, username, password, *args, **kwargs):
-        from models import User
+        from models.User import User
         user = User.query.filter_by(username=username).first()
-        if user.check_password(password):
+        if user.check_password_hash(password):
             return user
         return None
 

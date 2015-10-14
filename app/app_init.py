@@ -10,8 +10,11 @@ def create_app():
 
     with application.app_context():
         # Register database (sqlalchemy)
-        db = SQLAlchemy()
+        from models import db
         db.init_app(application)
+        """
+        @:type SQLAlchemy
+        """
         application.db = db
 
         # Register OAuth2

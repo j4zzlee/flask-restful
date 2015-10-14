@@ -1,8 +1,50 @@
 __author__ = 'gia'
+__all__ = ['Category', 'EntityMeta', 'MetaGroup', 'MetaValue', 'Product', 'User']
 
-from flask import current_app as app
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.types import TypeDecorator, CHAR
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
-db = app.db
+db = SQLAlchemy()
+
+"""
+@:type flask_sqlalchemy.SQLAlchemy
+"""
+
+
+class guid(TypeDecorator):
+    """Platform-independent GUID type.
+
+    Uses Postgresql's UUID type, otherwise uses
+    CHAR(32), storing as stringified hex values.
+
+    """
+    impl = CHAR
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == 'postgresql':
+            return dialect.type_descriptor(UUID())
+        else:
+            return dialect.type_descriptor(CHAR(32))
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        elif dialect.name == 'postgresql':
+            return str(value)
+        else:
+            if not isinstance(value, uuid.UUID):
+                return "%.32x" % uuid.UUID(value)
+            else:
+                # hexstring
+                return "%.32x" % value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        else:
+            return uuid.UUID(value)
 
 
 class Base:
@@ -11,6 +53,28 @@ class Base:
 
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class EntityBase:
+    TYPE_USER = 1
+    TYPE_PRODUCT = 2
+    TYPE_CATEGORY = 4
+
+    def __init__(self):
+        pass
+
+    def entity_type(self):
+        return None
+
+    @property
+    def properties(self):
+        # return None
+        from sqlalchemy import and_
+        from models.EntityMeta import EntityMeta
+        return EntityMeta.query.filter(and_(
+            EntityMeta.entity_id == getattr(self, 'id'),
+            EntityMeta.entity_type.op('&')(self.entity_type()) > 0
+        ))
 
 
 class Client(db.Model, Base):
@@ -23,8 +87,9 @@ class Client(db.Model, Base):
 
     # creator of the client, not required
     user_id = db.Column(db.ForeignKey('user.id'))
+    from models.User import User
     # required if you need to support client credential
-    user = db.relationship('User')
+    user = db.relationship(User)
 
     client_id = db.Column(db.String(40), primary_key=True)
     client_secret = db.Column(db.String(55), unique=True, index=True,
@@ -67,9 +132,11 @@ class Grant(db.Model, Base):
     id = db.Column(db.String(40), primary_key=True)
 
     user_id = db.Column(
-        db.String(40), db.ForeignKey('user.id', ondelete='CASCADE')
+        guid(), db.ForeignKey('user.id', ondelete='CASCADE')
     )
-    user = db.relationship('User')
+
+    from models.User import User
+    user = db.relationship(User)
 
     client_id = db.Column(
         db.String(40), db.ForeignKey('client.client_id'),
@@ -109,7 +176,7 @@ class Token(db.Model, Base):
     client = db.relationship('Client')
 
     user_id = db.Column(
-        db.String(40), db.ForeignKey('user.id')
+        guid(), db.ForeignKey('user.id')
     )
     user = db.relationship('User')
 
@@ -131,17 +198,3 @@ class Token(db.Model, Base):
         if self._scopes:
             return self._scopes.split()
         return []
-
-
-class User(db.Model, Base):
-    __tablename__ = 'user'
-    id = db.Column(db.String(40), primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    facebook = db.Column(db.String(255))
-    skype = db.Column(db.String(255))
-    first_name = db.Column(db.String(255))
-    last_name = db.Column(db.String(255))
-    dob = db.Column(db.Integer())
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    photo = db.Column(db.String(255))
-    password = db.Column(db.String(255))
