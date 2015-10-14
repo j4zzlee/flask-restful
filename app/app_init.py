@@ -3,21 +3,8 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 
 
-def add_configs(application):
-    application.config.from_object('config.default')
-    application.config.from_object('config.production')
-
-    try:
-        # only get configs from local if exists
-        application.config.from_object('config.local')
-    except ImportError:
-        pass
-
-    return application
-
-
 def create_app():
-
+    from config import add_configs
     # Register configurations
     application = add_configs(Flask(__name__))
 
@@ -33,13 +20,13 @@ def create_app():
         application.oauth = oauth
 
         # Register BluePrints
-        from controllers.blue_prints import add_blueprints
+        from controllers import add_blueprints
         add_blueprints(application)
 
         # Register Api
         from controllers import add_apis
         from flask_restful import Api
-        add_apis(application, Api(application))
+        add_apis(Api(application))
 
     return application
 

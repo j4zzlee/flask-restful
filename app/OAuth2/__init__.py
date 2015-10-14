@@ -4,11 +4,12 @@ import logging
 from functools import wraps
 from flask_oauthlib.provider import OAuth2Provider
 from datetime import datetime, timedelta
-from flask import request
+from flask import request, current_app as app
 from oauthlib import oauth2
 from flask_oauthlib.utils import extract_params, create_response
 
 log = logging.getLogger('flask_oauthlib')
+expires_in = 3600 * 24 * 30
 
 
 class OAuthProviderImpl(OAuth2Provider):
@@ -22,8 +23,9 @@ class OAuthProviderImpl(OAuth2Provider):
 
     def _grantsetter(self, client_id, code, request, *args, **kwargs):
         import uuid
-        from app_init import db
         from models import Grant
+
+        db = app.db
 
         # decide the expires time yourself
         expires = datetime.utcnow() + timedelta(days=1)
@@ -49,7 +51,7 @@ class OAuthProviderImpl(OAuth2Provider):
 
     def _tokensetter(self, token, request, *args, **kwargs):
         from models import Token
-        from app_init import db
+        db = app.db
 
         if request.user:
             toks = request.user and Token.query.filter_by(
@@ -59,7 +61,7 @@ class OAuthProviderImpl(OAuth2Provider):
             for t in toks:
                 db.session.delete(t)
 
-        expires_in = token.get('expires_in')
+        # expires_in = token.get('expires_in')
         expires = datetime.utcnow() + timedelta(seconds=expires_in)
 
         tok = Token(
@@ -178,15 +180,3 @@ class OAuthProviderImpl(OAuth2Provider):
         except oauth2.OAuth2Error as e:
             log.debug('OAuth2Error: %r', e)
             raise
-
-#
-# oauth = OAuthProviderImpl()
-# from flask import current_app as app
-# from controllers import oauth_controller
-#
-# with app.app_context():
-#     oauth.init_app(app)
-#     # app.register_blueprint(oauth_controller)
-#
-#
-
