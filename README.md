@@ -12,7 +12,6 @@ default   *        virtualbox   Running   tcp://192.168.99.100:2376
 * Database Migrations:
 > python migrations.py db revision --autogenerate -m 'Your message goes here' --version-path '1.0'
 > OR: python migrations.py db migrate
-* Go to the site (http://192.168.99.100:5000). Enjoy!!!
 
 * Prepare OAuth2 tables
 ```python
@@ -361,3 +360,5 @@ class AclUserRole(db.Model):
         return filter(None, set(results))
 
 ```
+
+* Go to the site (http://192.168.99.100:5000). Enjoy!!!
