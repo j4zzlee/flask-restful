@@ -3,6 +3,7 @@
 from flask import Flask
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
+from models import *
 
 
 def create_app():
@@ -11,17 +12,15 @@ def create_app():
 
     with app.app_context():
         from models import db
-        from models.Category import Category
-        from models.EntityMeta import EntityMeta
-        from models.MetaGroup import MetaGroup
-        from models.MetaValue import MetaValue
-        from models.Product import Product
 
         db.init_app(app)
         app.db = db
 
+        from models.oauth2 import oauth2_provider
+        oauth2_provider.init_app(app)
+
         # import models
-        migrate = Migrate(app, db, directory='bin/migrations/')
+        Migrate(app, db, directory='bin/migrations/')
 
         mgr = Manager(app)
         mgr.add_command('db', MigrateCommand)

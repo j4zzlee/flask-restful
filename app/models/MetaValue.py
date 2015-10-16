@@ -1,7 +1,7 @@
 __author__ = 'gia'
 
-from models import Base, guid, db
-from models.MetaGroup import MetaGroup
+from models import Base, db
+from libraries.db import guid
 
 
 class MetaValue(db.Model, Base):
@@ -16,11 +16,13 @@ class MetaValue(db.Model, Base):
         guid(),
         db.ForeignKey(
             'sys_meta_group.id',
-            name='fk_sys_meta_value_sys_meta_group_id_sys_meta_group'
+            name='fk_sys_meta_value_id_sys_meta_group',
+            onupdate='CASCADE',
+            ondelete='CASCADE'
         ),
         index=True
     )
-    group = db.relationship(lambda: MetaGroup, remote_side=id, backref='meta_values')
+    group = db.relationship('MetaGroup')
 
     type = db.Column(db.Integer, default=1)
     name = db.Column(db.String(255), nullable=False, unique=True)

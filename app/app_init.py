@@ -1,6 +1,5 @@
 #!flask/bin/python
 from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
 
 
 def create_app():
@@ -9,18 +8,17 @@ def create_app():
     application = add_configs(Flask(__name__))
 
     with application.app_context():
-        # Register database (sqlalchemy)
+        # Register database (SQLAlchemy)
         from models import db
         db.init_app(application)
+        application.db = db
         """
         @:type SQLAlchemy
         """
-        application.db = db
 
         # Register OAuth2
-        from OAuth2 import OAuthProviderImpl
-        oauth = OAuthProviderImpl(application)
-        application.oauth = oauth
+        from models.oauth2 import oauth2_provider
+        oauth2_provider.init_app(application)
 
         # Register BluePrints
         from controllers import add_blueprints

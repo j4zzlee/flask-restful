@@ -1,5 +1,7 @@
 __author__ = 'gia'
-from models import Base, guid, EntityBase, db
+__all__ = ['User']
+from models import Base, EntityBase, db
+from libraries.db import guid
 
 
 class User(db.Model, Base, EntityBase):
@@ -21,6 +23,11 @@ class User(db.Model, Base, EntityBase):
         return EntityBase.TYPE_USER
 
     @property
+    def resource_type(self):
+        from models.acl import AclResource
+        return AclResource.USER
+
+    @property
     def password(self):
         # No one should be able to find user's password
         return None
@@ -30,6 +37,10 @@ class User(db.Model, Base, EntityBase):
         from werkzeug.security import generate_password_hash
         self._password = generate_password_hash(password)
 
-    def check_password_hash(self, password):
-        from werkzeug.security import generate_password_hash
-        return self._password == generate_password_hash(password)
+    def check_password(self, password):
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self._password, password)
+
+    def is_allowed(self, resource, privilege):
+        from models.acl import acl_manager
+        return acl_manager.is_allowed(self, resource, privilege)

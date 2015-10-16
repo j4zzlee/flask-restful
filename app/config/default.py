@@ -29,3 +29,12 @@ CSRF_SESSION_KEY = "secret"
 # Secret key for signing cookies
 SECRET_KEY = "secret"
 
+OAUTH2_PROVIDER_TOKEN_EXPIRES_IN = 3600
+
+USER_TABLE = 'user'
+
+# ACL
+SUPER_USER_ROLE = 'superuser'
+OWNER_USER_ROLE = 'owner'
+DEFAULT_USER_ROLE = 'user'
+

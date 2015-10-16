@@ -1,7 +1,7 @@
 __author__ = 'gia'
 
-from flask import current_app as app
-from models import Base, guid, db
+from models import Base, db
+from libraries.db import guid
 
 
 class MetaGroup(db.Model, Base):

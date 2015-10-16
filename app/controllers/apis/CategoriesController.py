@@ -1,6 +1,7 @@
 __author__ = 'gia'
 
-from flask import request, current_app as app
+from flask import request
+from models.oauth2 import oauth2_provider as oauth
 from flask_restful import Resource, abort
 from controllers.apis import BaseApi
 
@@ -8,6 +9,6 @@ from controllers.apis import BaseApi
 class CategoriesController(Resource, BaseApi):
     _resource_name = 'categories'
 
-    @app.oauth.require_oauth('email')
+    @oauth.require_oauth('email')
     def get(self, q=None):
         return 'Hello world!!!'

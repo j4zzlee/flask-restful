@@ -1,6 +1,7 @@
 __author__ = 'gia'
 
-from models import Base, guid, EntityBase, db
+from models import Base, EntityBase, db
+from libraries.db import guid
 
 
 class Product(db.Model, Base, EntityBase):
@@ -8,7 +9,12 @@ class Product(db.Model, Base, EntityBase):
     id = db.Column(guid(), primary_key=True)
 
     # Relationships with Category
-    category_id = db.Column(guid(), db.ForeignKey('category.id', name='fk_product_category_id_category'), index=True)
+    category_id = db.Column(guid(), db.ForeignKey(
+        'category.id',
+        name='fk_product_id_category',
+        onupdate='CASCADE',
+        ondelete='CASCADE'
+    ), index=True)
     category = db.relationship('Category')
 
     name = db.Column(db.String(255), nullable=False)
@@ -21,3 +27,8 @@ class Product(db.Model, Base, EntityBase):
     @property
     def entity_type(self):
         return EntityBase.TYPE_PRODUCT
+
+    @property
+    def resource_type(self):
+        from models.acl import AclResource
+        return AclResource.PRODUCT
