@@ -282,7 +282,7 @@ class AclRoleResource(db.Model):
     @staticmethod
     def get_permission_for_user(user_id, resource_name, privilege, is_owner):
         from sqlalchemy import and_, or_
-        from sqlalchemy.sql.operators import in_op, op
+        from sqlalchemy.sql.operators import in_op
 
         roles = AclUserRole.get_roles_for(user_id=user_id, is_owner=is_owner)
 
@@ -310,7 +310,7 @@ class AclUserResource(db.Model):
         primary_key=True,
         nullable=False
     )
-    from models.User import User
+
     user = db.relationship('User')
     resource_id = db.Column(guid(), primary_key=True, nullable=False)
     resource_type = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=False)
