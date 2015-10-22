@@ -29,6 +29,6 @@ RUN rm -rf local.*
 
 WORKDIR /var/www/app
 
-RUN python migrations.py db upgrade
+#RUN python migrations.py db upgrade
 
 CMD ["/usr/bin/supervisord"]

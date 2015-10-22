@@ -1,13 +1,21 @@
 # flask-restful
 
-* View docker-machine ip: 
+* View docker machines: 
 > docker-machine ls
 NAME      ACTIVE   DRIVER       STATE     URL                         SWARM
 default   *        virtualbox   Running   tcp://192.168.99.100:2376   
 
-* Download mysql: 
-> docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=<my-secret-pw> -d mysql
-> docker run -p 5000:80 --link some-mysql:mysql -d st2forget/flask-restful
+* View docker machine's IP:
+> docker-machine ip default
+
+* Build project
+> docker-compose build
+
+* Start containers:
+> docker-compose run web
+
+* Run migrations:
+> docker-compose run web python /var/www/app/migrations.py db migrate
 
 * Database Migrations:
 > python migrations.py db revision --autogenerate -m 'Your message goes here' --version-path '1.0'
@@ -361,4 +369,41 @@ class AclUserRole(db.Model):
 
 ```
 
-* Go to the site (http://192.168.99.100:5000). Enjoy!!!
+* Get access_token:
+> http://0.0.0.0:5000/oauth/token
+> curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: 2de4306e-efe4-794a-9bcb-9498942cdbc9"
+  -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+  -F "grant_type=authorization_code"
+  -F "client_secret=WGSYGQZUVYAWXLPRCOMKPCAAGUMHAFQMXQLNIYSOESANOPJCMAUZFUX"
+  -F "client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ"
+  -F "code=Gbu57qoghGxq79Oolkuh0iuia6xgTn" 'http://0.0.0.0:5000/oauth/token'
+
+> {
+  "token_type": "Bearer",
+  "version": "0.1.0",
+  "access_token": "V4cTidBz278yc8MGPNyoLKYhX6NgtV",
+  "scope": "email",
+  "expires_in": 3600,
+  "refresh_token": "hz8ZrGxQitu6CnqHUsNg5SRQFpMiex"
+}
+
+* Or get access_token by refresh_token:
+> curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: 85a594e7-4a06-9b8b-ec17-e6ac66db5390"
+  -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+  -F "grant_type=refresh_token"
+  -F "client_secret=WGSYGQZUVYAWXLPRCOMKPCAAGUMHAFQMXQLNIYSOESANOPJCMAUZFUX"
+  -F "client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ"
+  -F "refresh_token=hz8ZrGxQitu6CnqHUsNg5SRQFpMiex"
+  'http://0.0.0.0:5000/oauth/token'
+
+> {
+  "token_type": "Bearer",
+  "version": "0.1.0",
+  "access_token": "V4m8F5OR10xV3VJB4fkZpJ5n6VBGNy",
+  "scope": "email",
+  "expires_in": 3600,
+  "refresh_token": "JSjHJ4qtRZedc3W0h0gnD73ZWTHTQ4"
+}
+
+* Get endpoint:
+> http://<docker_container_ip>:80/api/v1.0/products

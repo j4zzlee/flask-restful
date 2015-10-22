@@ -1,0 +1,20 @@
+web:
+  restart: always
+  build: ./api
+  ports:
+    - 80:80
+  links:
+    - mysql:mysql
+  volumes:
+    - /var/www/app
+  command: /usr/bin/supervisord
+
+mysql:
+  restart: always
+  image: mysql:latest
+  environment:
+    - MYSQL_ROOT_PASSWORD=H4t3rsgonnah4te
+  volumes:
+    - /var/lib/mysql
+  ports:
+    - "3306:3306"

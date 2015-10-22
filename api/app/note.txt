@@ -2,7 +2,7 @@
 > docker rm `docker ps --no-trunc -aq`
 
 * SSH to docker
-> docker exec -i -t <started name>
+> docker exec -i -t <started name> bash
 
 * Local client_id
 > OSCZXSKQBDHPWIJJHFFBVZNUGGADSOCRPBQVVKDP
