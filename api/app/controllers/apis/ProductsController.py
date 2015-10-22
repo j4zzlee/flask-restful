@@ -25,7 +25,6 @@ class ProductsController(Resource, BaseApi):
         # Current user
         u = oauth.current_user()
         from models.acl import AclResource, Privilege
-
         return {
             'Can view USER': u.is_allowed(AclResource.USER, Privilege.VIEW),
             'Can add USER': u.is_allowed(AclResource.USER, Privilege.ADD),

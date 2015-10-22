@@ -2,4 +2,4 @@
 docker stop `docker ps`
 docker rm `docker ps --no-trunc -aq`
 docker-compose build
-docker-compose up
+docker-compose up -d
