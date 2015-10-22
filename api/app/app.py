@@ -1,5 +1,6 @@
 #!flask/bin/python
 from flask import Flask, request
+from models import *
 
 
 def create_app():

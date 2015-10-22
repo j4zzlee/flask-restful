@@ -58,6 +58,7 @@ def upgrade():
     super_user_uuid = str(uuid.uuid4())
 
     from werkzeug.security import generate_password_hash
+    import string, random
 
     user_table = table('user',
                        column('id', guid()),
@@ -66,19 +67,67 @@ def upgrade():
                        column('password', String(255))
                        )
 
+    import os
+    from colorama import Fore
+    bold = '\033[1m'
+    end_bold = '\033[0m'
+
+    superuser_name = 'superuser'
+    superuser_password = ''.join(random.choice(string.ascii_uppercase) for i in range(10))
+    superuser_email = os.getenv('SUPERUSER_EMAIL', 'superuser@consoto.com')
+
+    user_name = 'normal_user'
+    user_password = ''.join(random.choice(string.ascii_uppercase) for i in range(10))
+    user_email = os.getenv('NORMAL_USER_EMAIL', 'user@consoto.com')
+
+    print '* Generating {2}{0}SUPER_USER{1}{3}...'.format(
+        bold,  # {0}
+        end_bold,  # {1}
+        Fore.YELLOW,  # {2}
+        Fore.RESET  # {3}
+    )
+    print ' - {6}Username{7}: {5}{3}{0}{4}{7}\n - {6}Password{7}: {5}{3}{1}{4}{7}\n - {6}Email{7}: {5}{3}{2}{4}{7}'.format(
+        superuser_name,
+        superuser_password,
+        superuser_email,
+        bold,  # {3}
+        end_bold,  # {4}
+        Fore.GREEN,  # {5}
+        Fore.YELLOW,  # {6}
+        Fore.RESET  # {7}
+    )
+
+    print '* Generating {2}{0}NORMAL_USER{1}{3}...'.format(
+        bold,  # {0}
+        end_bold,  # {1}
+        Fore.YELLOW,  # {2}
+        Fore.RESET  # {3}
+    )
+
+    print ' - {6}Username{7}: {5}{3}{0}{4}{7}\n - {6}Password{7}: {5}{3}{1}{4}{7}\n - {6}Email{7}: {5}{3}{2}{4}{7}'.format(
+        user_name,
+        user_password,
+        user_email,
+        bold,  # {3}
+        end_bold,  # {4}
+        Fore.GREEN,  # {5}
+        Fore.YELLOW,  # {6}
+        Fore.RESET  # {7}
+    )
+
     op.bulk_insert(user_table,
                    [
                        {
                            'id': super_user_uuid,
-                           'username': 'superuser',
-                           'email': 'superuser@consoto.com',
-                           'password': generate_password_hash('P@ssword123')
+                           'username': superuser_name,
+                           'email': superuser_email,
+                           'password': generate_password_hash(superuser_password)
                        },
                        {
                            'id': user_uuid,
-                           'username': 'normal_user',
-                           'email': 'user@consoto.com',
-                           'password': generate_password_hash('P@ssword123')
+                           'username': user_name,
+                           'email': user_email,
+                           'password': generate_password_hash(user_password)
                        }
                    ])
 
@@ -138,7 +187,6 @@ def upgrade():
                            'permission': Permission.ALLOW
                        }
                    ])
-
 
     pass
     ### end Alembic commands ###

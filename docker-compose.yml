@@ -7,6 +7,9 @@ web:
     - mysql:mysql
   volumes:
     - /var/www/app
+  environment:
+    - SUPERUSER_EMAIL='hoanggia.lh@gmail.com'
+    - NORMAL_USER_EMAIL='bc.royal.it@gmail.com'
   command: /usr/bin/supervisord
 
 mysql:

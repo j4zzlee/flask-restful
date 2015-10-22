@@ -25,15 +25,31 @@ def upgrade():
                          column('is_confidential', Boolean)
                          )
 
+    client_id = ''.join(random.choice(string.ascii_uppercase) for i in range(40))
+    client_secret = ''.join(random.choice(string.ascii_uppercase) for i in range(55))
+
     op.bulk_insert(client_table,
                    [
                        {
-                           'client_id': ''.join(random.choice(string.ascii_uppercase) for i in range(40)),
-                           'client_secret': ''.join(random.choice(string.ascii_uppercase) for i in range(55)),
+                           'client_id': client_id,
+                           'client_secret': client_secret,
                            '_redirect_uris': 'application/authorized',
                            'is_confidential': 1
                        }
                    ])
+
+    from colorama import Fore
+    bold = '\033[1m'
+    end_bold = '\033[0m'
+    print '* Generated: \n - {5}Client ID:{6} {4}{2}{0}{3}{6} \n - {5}Client Secret:{6} {4}{2}{1}{3}{6}'.format(
+        client_id,
+        client_secret,
+        bold,  # {2}
+        end_bold,  # {3}
+        Fore.GREEN,  # {4}
+        Fore.YELLOW,  # {5}
+        Fore.RESET  # {6)
+    )
     ### end Alembic commands ###
 
 

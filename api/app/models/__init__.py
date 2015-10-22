@@ -116,10 +116,11 @@ class Grant(db.Model):
     id = db.Column(db.String(40), primary_key=True)
 
     user_id = db.Column(guid(), db.ForeignKey('user.id', onupdate='CASCADE', ondelete='CASCADE'))
-    user = db.relationship('User', remote_side=user_id, backref='grants')
+    user = db.relationship('User')
 
     client_id = db.Column(
-        db.String(40), db.ForeignKey('client.client_id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.String(40),
+        db.ForeignKey('client.client_id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False,
     )
     client = db.relationship('Client')
@@ -310,8 +311,8 @@ class AclUserResource(db.Model):
         primary_key=True,
         nullable=False
     )
-
     user = db.relationship('User')
+
     resource_id = db.Column(guid(), primary_key=True, nullable=False)
     resource_type = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=False)
     _privilege = db.Column(db.Integer, name='privilege', primary_key=True, autoincrement=False,

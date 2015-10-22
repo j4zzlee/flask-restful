@@ -5,3 +5,5 @@ flask-migrate
 Flask-SQLAlchemy
 Flask-OAuthlib
 MySQL-Python
+sqlalchemy-utils
+colorama
