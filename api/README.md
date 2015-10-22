@@ -371,14 +371,13 @@ class AclUserRole(db.Model):
 
 * Get access_token:
 > http://0.0.0.0:5000/oauth/token
-> curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: 2de4306e-efe4-794a-9bcb-9498942cdbc9"
+ curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: 2de4306e-efe4-794a-9bcb-9498942cdbc9"
   -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
   -F "grant_type=authorization_code"
   -F "client_secret=WGSYGQZUVYAWXLPRCOMKPCAAGUMHAFQMXQLNIYSOESANOPJCMAUZFUX"
   -F "client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ"
   -F "code=Gbu57qoghGxq79Oolkuh0iuia6xgTn" 'http://0.0.0.0:5000/oauth/token'
-
-> {
+{
   "token_type": "Bearer",
   "version": "0.1.0",
   "access_token": "V4cTidBz278yc8MGPNyoLKYhX6NgtV",
