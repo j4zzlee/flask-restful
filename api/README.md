@@ -377,7 +377,9 @@ class AclUserRole(db.Model):
   -F "client_secret=WGSYGQZUVYAWXLPRCOMKPCAAGUMHAFQMXQLNIYSOESANOPJCMAUZFUX"
   -F "client_id=CLKDKCBNAXDNVXNJQTCVGXWEAFSWVZLUEVHKGGOZ"
   -F "code=Gbu57qoghGxq79Oolkuh0iuia6xgTn" 'http://0.0.0.0:5000/oauth/token'
-{
+
+* Get access_token response:
+> {
   "token_type": "Bearer",
   "version": "0.1.0",
   "access_token": "V4cTidBz278yc8MGPNyoLKYhX6NgtV",
@@ -395,6 +397,7 @@ class AclUserRole(db.Model):
   -F "refresh_token=hz8ZrGxQitu6CnqHUsNg5SRQFpMiex"
   'http://0.0.0.0:5000/oauth/token'
 
+* Get access_token response: 
 > {
   "token_type": "Bearer",
   "version": "0.1.0",
