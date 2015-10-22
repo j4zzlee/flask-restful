@@ -7,7 +7,7 @@ from flask_oauthlib.provider import OAuth2Provider
 from flask import request
 from oauthlib import oauth2
 from flask_oauthlib.utils import extract_params, create_response
-
+from werkzeug import cached_property
 
 log = logging.getLogger('flask_oauthlib')
 
@@ -122,7 +122,24 @@ class OAuthProviderImpl(OAuth2Provider):
 
         return result
 
+    def verify_request(self, scopes):
+        """Verify current request, get the oauth data.
 
+        If you can't use the ``require_oauth`` decorator, you can fetch
+        the data in your request body::
 
+            def your_handler():
+                valid, req = oauth.verify_request(['email'])
+                if valid:
+                    return jsonify(user=req.user)
+                return jsonify(status='error')
+        """
+        uri, http_method, body, headers = extract_params()
+        import urllib, urlparse
+        query = urlparse.urlparse(uri).query
+        encoded_query = urllib.quote_plus(query)
 
+        return self.server.verify_request(
+            uri.replace(query, encoded_query), http_method, body, headers, scopes
+        )
 

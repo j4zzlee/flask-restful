@@ -23,18 +23,11 @@ class ProductsController(Resource, BaseApi):
         # args = parser.parse_args()
 
         # Current user
-        u = oauth.current_user()
-        from models.acl import AclResource, Privilege
-        return {
-            'Can view USER': u.is_allowed(AclResource.USER, Privilege.VIEW),
-            'Can add USER': u.is_allowed(AclResource.USER, Privilege.ADD),
-            'Can update USER': u.is_allowed(AclResource.USER, Privilege.UPDATE),
-            'Can delete USER': u.is_allowed(AclResource.USER, Privilege.DELETE),
-            'Can view ADMIN': u.is_allowed(AclResource.ADMIN, Privilege.VIEW),
-            'Can view SETTINGS': u.is_allowed(AclResource.SETTINGS, Privilege.VIEW),
-            'Can view PRODUCTS': u.is_allowed(AclResource.PRODUCT, Privilege.VIEW),
-            'Can view CATEGORIES': u.is_allowed(AclResource.CATEGORY, Privilege.VIEW)
-        }
+        # u = oauth.current_user()
+        # return self.make_response(u)
+
+        from models.Product import Product
+        return self.make_response(Product.query.all())
 
     @oauth.require_oauth('email')
     def put(self):
