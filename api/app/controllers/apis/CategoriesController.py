@@ -10,5 +10,5 @@ class CategoriesController(Resource, BaseApi):
     _resource_name = 'categories'
 
     @oauth.require_oauth('email')
-    def get(self, q=None):
+    def get(self):
         return 'Hello world!!!'

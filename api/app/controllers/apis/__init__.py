@@ -9,7 +9,7 @@ class BaseApi:
 
     _resource_name = ''
 
-    def get(self, q=None):
+    def get(self):
         abort(404, message="Method GET is not implemented")
 
     def put(self):
@@ -35,6 +35,10 @@ class BaseApi:
         fields = args.get('fields')
         results = self.transform(data, json.loads(fields))
         return results
+
+    def current_user(self):
+        from models.oauth2 import oauth2_provider as oauth
+        return oauth.current_user()
 
     def transform(self, data, fields):
         if not data or not fields or not isinstance(fields, (list, tuple, dict,)) or len(fields) == 0:
